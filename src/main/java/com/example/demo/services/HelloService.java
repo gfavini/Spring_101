@@ -1,6 +1,8 @@
 package com.example.demo.services;
 
+import com.example.demo.dto.PessoaDto;
 import com.example.demo.entity.PessoaEntity;
+import com.example.demo.mapper.PessoaMapper;
 import com.example.demo.repository.HelloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,8 @@ public class HelloService {
         return pessoa.getName() + "voce tem " + pessoa.getIdade() * 365 + " dias de vida";
     }
 
-    public PessoaEntity addPessoa(PessoaEntity pessoa) {
-        return helloRepository.save(pessoa);
+    public PessoaDto addPessoa(PessoaEntity pessoa) {
+        return PessoaMapper.toDto(helloRepository.save(pessoa));
     }
 
     public PessoaEntity update(PessoaEntity pessoaUpdated, String name){

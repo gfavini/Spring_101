@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.PessoaDto;
 import com.example.demo.entity.PessoaEntity;
+import com.example.demo.response.BaseResponse;
 import com.example.demo.services.HelloService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +45,12 @@ public class HelloController {
     }
 
     @PostMapping("/pessoa")
-    public PessoaEntity add(@RequestBody PessoaEntity pessoa){
-        return helloService.addPessoa(pessoa);
+    public BaseResponse<PessoaDto> add(@RequestBody PessoaEntity pessoa){
+        return BaseResponse.<PessoaDto>builder()
+                .httpCode(200)
+                .message("OK")
+                .response(helloService.addPessoa(pessoa))
+                .build();
     }
 
     @PutMapping("/pessoa/{name}")
