@@ -4,17 +4,59 @@ import com.example.demo.dto.PessoaDto;
 import com.example.demo.entity.PessoaEntity;
 import com.example.demo.response.BaseResponse;
 import com.example.demo.services.HelloService;
-import lombok.AllArgsConstructor;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+
+import javax.servlet.http.HttpServletResponse;
+
+
 @RestController
-@AllArgsConstructor
+//@AllArgsConstructor
 public class HelloController {
 
     private final HelloService helloService; // Injeção do serviço
 
+    private final Counter counter = Metrics.counter("hello_resqust_counter", "uri", "/api/users");;
+
+    @Autowired
+    final PrometheusMeterRegistry prometheusRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+
+    public HelloController(HelloService helloService){
+
+        this.helloService = helloService;
+
+    }
+
+
+
+
+    // Cria um endpoint para o protheus sem as informações do actuator do spring
+    @GetMapping("/prometheus")
+    public String prometheus(){
+
+        String response = prometheusRegistry.scrape();
+        System.out.println(response);
+        return response;
+
+    }
+
     @GetMapping("/hello")
-    public String hello(){
+    public String hello() throws InterruptedException {
+
+         counter.increment();
+        int random_int = (int)Math.floor(Math.random()*(700-200+1)+200);
+        TimeUnit.MILLISECONDS.sleep(random_int);
+
         return "Hello Gustavo";
     }
 
